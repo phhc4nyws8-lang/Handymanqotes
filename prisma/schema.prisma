@@ -1,0 +1,280 @@
+// Handyman Quotes — data model
+//
+// Dev/demo database is SQLite (zero setup). For production, swap the
+// datasource provider to "postgresql" and point DATABASE_URL at a real
+// Postgres instance (Neon/Supabase/RDS all work) — see README.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectType {
+  BATHROOM_REMODEL
+  KITCHEN_REMODEL
+  FLOORING
+  CUSTOM
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+enum MaterialCategory {
+  FLOORING
+  WALL_TILE
+  BACKSPLASH
+  COUNTERTOP
+  CABINETRY
+  VANITY
+  PAINT
+  TRIM
+  TOILET
+  TUB_SHOWER
+  FIXTURE
+}
+
+enum PriceUnit {
+  SQFT
+  LINEAR_FT
+  EACH
+  CUBIC_YARD
+}
+
+enum LaborTaskType {
+  DEMO_FLOORING
+  DEMO_TILE
+  DEMO_DRYWALL
+  DEMO_CABINETRY
+  DEMO_COUNTERTOP
+  DEMO_VANITY
+  DEMO_TOILET
+  DEMO_TUB_SHOWER
+  DEMO_FIXTURE
+  INSTALL_FLOORING
+  INSTALL_TILE
+  INSTALL_DRYWALL
+  INSTALL_PAINT
+  INSTALL_TRIM
+  INSTALL_CABINETRY
+  INSTALL_COUNTERTOP
+  INSTALL_VANITY
+  INSTALL_TOILET
+  INSTALL_TUB_SHOWER
+  INSTALL_FIXTURE
+}
+
+enum DebrisType {
+  GENERAL_CONSTRUCTION
+  TILE_CONCRETE
+  MIXED
+}
+
+enum EstimatePhase {
+  DEMOLITION
+  MATERIALS
+  INSTALLATION
+  DISPOSAL
+  OTHER
+}
+
+enum PhotoKind {
+  BEFORE
+  AFTER
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+  DEMO_SKIPPED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+
+  quotes Quote[]
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  quotes Quote[]
+}
+
+model Quote {
+  id              String      @id @default(cuid())
+  number          String      @unique
+  status          QuoteStatus @default(DRAFT)
+  projectType     ProjectType
+  region          String      @default("Northern California")
+  overheadPercent Float       @default(15)
+  taxPercent      Float       @default(8.75)
+  /// Labor hours snapshotted by the estimate engine alongside `lineItems`
+  /// (see EstimateLineItem) — kept in sync with it, not recomputed on send.
+  laborHoursDemolition  Float @default(0)
+  laborHoursInstallation Float @default(0)
+  laborHoursTotal        Float @default(0)
+  estimatedDays          Int   @default(0)
+  notes           String?
+  validUntil      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  sentAt          DateTime?
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  spaces             Space[]
+  materialSelections MaterialSelection[]
+  photos              Photo[]
+  lineItems           EstimateLineItem[]
+  emailLogs           EmailLog[]
+}
+
+model Space {
+  id        String  @id @default(cuid())
+  quoteId   String
+  quote     Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  name      String
+  lengthFt  Float
+  widthFt   Float
+  heightFt  Float   @default(8)
+  notes     String?
+
+  materialSelections MaterialSelection[]
+  photos             Photo[]
+}
+
+/// A NorCal price-book entry for a specific material. Seeded with current
+/// averages; the contractor edits these as real supplier prices change —
+/// there is no live pricing feed (none exists publicly), so `lastUpdated`
+/// tells the contractor how stale a number might be.
+model MaterialPrice {
+  id                String           @id @default(cuid())
+  region            String           @default("Northern California")
+  category          MaterialCategory
+  name              String
+  description       String
+  unit              PriceUnit
+  unitCost          Float
+  wasteFactorPercent Float           @default(10)
+  /// Short visual descriptor fed into the AI "after" photo prompt,
+  /// e.g. "matte porcelain wood-look tile plank, warm walnut tone"
+  imageDescriptor   String
+  lastUpdated       DateTime         @default(now())
+  active            Boolean          @default(true)
+
+  /// Which labor task/rate installs this material, and which (if any) demos
+  /// out whatever it's replacing, and what kind of debris that demo produces.
+  /// Set per-material rather than derived from `category` alone, since e.g.
+  /// two FLOORING options (LVP vs. tile) have very different demo/install
+  /// labor and debris profiles.
+  installLaborTask LaborTaskType
+  demoLaborTask    LaborTaskType?
+  debrisType       DebrisType?
+
+  materialSelections MaterialSelection[]
+}
+
+model MaterialSelection {
+  id        String   @id @default(cuid())
+  quoteId   String
+  quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  spaceId   String?
+  space     Space?   @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  category         MaterialCategory
+  materialPriceId  String
+  materialPrice    MaterialPrice @relation(fields: [materialPriceId], references: [id])
+  /// Overrides the auto-computed quantity (from space measurements) when set.
+  quantityOverride Float?
+  notes            String?
+}
+
+/// NorCal production-rate benchmarks used to turn measurements into labor
+/// hours and cost. These are common contractor rate-of-production figures,
+/// not pulled from a paid estimating database (e.g. RSMeans) — the
+/// contractor should tune `hoursPerUnit`/`hourlyRate` to match his crew.
+model LaborRate {
+  id          String        @id @default(cuid())
+  region      String        @default("Northern California")
+  taskType    LaborTaskType @unique
+  unit        PriceUnit
+  hoursPerUnit Float
+  hourlyRate   Float
+  /// Cubic yards of debris hauled away per unit of this task (demo tasks
+  /// only; 0 for install tasks). Drives the disposal/dumpster line items.
+  debrisCubicYardsPerUnit Float @default(0)
+  notes        String?
+}
+
+model DisposalRate {
+  id                  String     @id @default(cuid())
+  region              String     @default("Northern California")
+  debrisType          DebrisType @unique
+  costPerCubicYard    Float
+  /// Flat haul/dump-run fee (fuel, tipping fee minimum, labor to load),
+  /// charged once per distinct debris stream on a job, not per line item.
+  dumpsterFlatFee     Float
+  notes               String?
+}
+
+model Photo {
+  id        String    @id @default(cuid())
+  quoteId   String
+  quote     Quote     @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  spaceId   String?
+  space     Space?    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  kind      PhotoKind
+  url       String
+  /// The prompt used to generate this photo (AFTER photos only).
+  prompt    String?
+  provider  String?
+  createdAt DateTime  @default(now())
+}
+
+/// Persisted, itemized cost breakdown for a quote. Generated by the
+/// estimate engine and snapshotted here so a sent quote's numbers never
+/// silently drift if the price book changes later.
+model EstimateLineItem {
+  id          String        @id @default(cuid())
+  quoteId     String
+  quote       Quote         @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  phase       EstimatePhase
+  description String
+  quantity    Float
+  unit        PriceUnit
+  unitCost    Float
+  totalCost   Float
+  sortOrder   Int
+}
+
+model EmailLog {
+  id               String      @id @default(cuid())
+  quoteId          String
+  quote            Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  toEmail          String
+  status           EmailStatus
+  providerMessageId String?
+  error            String?
+  sentAt           DateTime    @default(now())
+}
