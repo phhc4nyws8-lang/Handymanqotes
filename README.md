@@ -5,9 +5,9 @@ HTML/CSS/JS — no build step, no framework, no dependencies.
 
 ## Before you launch — required edits
 
-1. **Phone number** — find/replace `+15551234567` (tel: links) and
-   `(555) 123-4567` (display text) in `index.html`.
-2. **Email** — find/replace `contact@jchandyman.work` in `index.html`.
+1. **Phone number** — find/replace `+15103616584` (tel: links) and
+   `(510) 361-6584` (display text) in `index.html`.
+2. **Email** — find/replace `james@jchandyman.work` in `index.html`.
 3. **Business/owner name** — replace `Owner Name` in the footer.
 4. **Service area** — replace `[Your Service Area]` (hero text, footer,
    and the `areaServed` field in the JSON-LD block in `<head>`).
