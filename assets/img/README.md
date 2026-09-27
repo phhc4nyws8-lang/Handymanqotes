@@ -12,8 +12,7 @@ pairing needed.
 - Recommended size: ~1000px on the long edge, JPG, under 250KB each.
 - Add a photo by copying one of the `<figure>` blocks in the Gallery
   section of `index.html`, pointing `src` at the new file, and writing
-  a real `<figcaption>` (replace any `[Neighborhood/City]`
-  placeholders with the actual location).
+  a short `<figcaption>` describing the job.
 
 ## Logo
 
