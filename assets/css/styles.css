@@ -276,112 +276,26 @@ textarea:focus-visible {
 .why-item h3 { color: #fff; margin-bottom: 8px; }
 .why-item p { color: rgba(255,255,255,0.72); margin: 0; font-size: 0.92rem; }
 
-/* ---------- Gallery / before-after slider ---------- */
+/* ---------- Gallery ---------- */
 .gallery { padding: 88px 0; }
 
-.ba-grid {
+.photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
   margin-top: 32px;
 }
 
-.ba-slider {
-  margin: 0;
-  position: relative;
-  aspect-ratio: 4 / 3;
+.photo-grid figure { margin: 0; }
+.photo-grid img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
   border-radius: 10px;
-  overflow: hidden;
   border: 1px solid var(--color-hairline);
   background: #ddd;
-  touch-action: pan-y;
 }
-.ba-slider img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  user-select: none;
-  pointer-events: none;
-}
-.ba-before-wrap {
-  position: absolute;
-  top: 0; left: 0;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-}
-.ba-before-wrap img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  max-width: none;
-  width: 100%; /* overridden inline by JS to match the slider's full width */
-}
-.ba-range {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: ew-resize;
-  z-index: 3;
-}
-.ba-handle {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 2px;
-  height: 100%;
-  background: #fff;
-  transform: translateX(-50%);
-  pointer-events: none;
-  box-shadow: 0 0 6px rgba(0,0,0,0.4);
-  z-index: 2;
-}
-.ba-handle::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-}
-.ba-handle::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
-  border-right: 2px solid var(--color-teal-dark);
-  border-bottom: 2px solid var(--color-teal-dark);
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-.ba-tag {
-  position: absolute;
-  bottom: 10px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: #fff;
-  z-index: 2;
-  pointer-events: none;
-}
-.ba-tag-before { left: 10px; background: rgba(22, 35, 42, 0.65); }
-.ba-tag-after { right: 10px; background: var(--color-teal); }
-.ba-slider figcaption {
+.photo-grid figcaption {
   margin-top: 10px;
   font-size: 0.88rem;
   font-weight: 600;

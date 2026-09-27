@@ -1,23 +1,19 @@
 # Images
 
-`gallery/before-1.jpg` … `after-3.jpg` are solid-color placeholders
-generated for layout purposes only. Replace them with real photos
-before launch — keep the same filenames (or update the `src`
-attributes in `index.html` if you rename them).
+`gallery/*.jpg` are real job-site photos (resized to ~1000px wide,
+JPEG quality 0.8). `logo/`, `favicon.png`, and `og-cover.png` are the
+real JC Handyman brand assets (from the logo kit).
 
-`logo/`, `favicon.png`, and `og-cover.png` are the real JC Handyman
-brand assets (from the logo kit) — no placeholders there.
+## Gallery
 
-## Before/after gallery
+A plain photo grid (`.photo-grid` in `index.html`) — no before/after
+pairing needed.
 
-- Recommended size: 800x600px (4:3), JPG, under 300KB each.
-- Shoot "before" and "after" from the same angle/distance so the slider
-  comparison lines up.
-- Naming pattern already wired into `index.html`:
-  `before-1.jpg` / `after-1.jpg`, `before-2.jpg` / `after-2.jpg`, etc.
-- Add a 4th pair by copying one of the `.ba-slider` blocks in the
-  Gallery section of `index.html` and updating the numbers.
-- Update each `<figcaption>` with the real job type/neighborhood.
+- Recommended size: ~1000px on the long edge, JPG, under 250KB each.
+- Add a photo by copying one of the `<figure>` blocks in the Gallery
+  section of `index.html`, pointing `src` at the new file, and writing
+  a real `<figcaption>` (replace any `[Neighborhood/City]`
+  placeholders with the actual location).
 
 ## Logo
 
