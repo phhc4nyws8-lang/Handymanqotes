@@ -1,0 +1,304 @@
+/* ==========================================================================
+   Handyman.work — landing page styles
+   ========================================================================== */
+
+:root {
+  --color-bg: #f7f5f2;
+  --color-surface: #ffffff;
+  --color-text: #1c2b33;
+  --color-text-muted: #56656c;
+  --color-primary: #1b3a4b;      /* deep slate blue */
+  --color-primary-dark: #12262f;
+  --color-accent: #e8622c;       /* work-boot orange, for the email CTA */
+  --color-accent-dark: #c74f1f;
+  --color-call: #2c8a4b;         /* green for call CTA */
+  --color-call-dark: #226e3b;
+  --color-border: #e2ddd5;
+  --radius: 10px;
+  --max-width: 1100px;
+  --shadow: 0 8px 24px rgba(18, 38, 47, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.55;
+}
+
+h1, h2, h3 { line-height: 1.15; margin: 0 0 0.5em; font-weight: 800; }
+h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+p { margin: 0 0 1em; color: var(--color-text-muted); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+img { max-width: 100%; display: block; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 10px 16px;
+  z-index: 100;
+}
+.skip-link:focus { left: 10px; top: 10px; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.logo {
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.logo span { color: var(--color-accent); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  white-space: nowrap;
+}
+.btn svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-call { background: var(--color-call); color: #fff; }
+.btn-call:hover { background: var(--color-call-dark); }
+
+.btn-email { background: var(--color-accent); color: #fff; }
+.btn-email:hover { background: var(--color-accent-dark); }
+
+.btn-small { padding: 9px 16px; font-size: 0.9rem; }
+.btn-small svg { width: 16px; height: 16px; }
+
+.btn-large { padding: 18px 28px; font-size: 1.1rem; }
+
+.cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: #fff;
+  padding: 72px 0 56px;
+}
+.hero h1 { color: #fff; font-size: clamp(2rem, 5vw, 3rem); }
+.hero-sub {
+  color: rgba(255,255,255,0.85);
+  font-size: 1.15rem;
+  max-width: 640px;
+}
+.hero-note {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+}
+
+/* ---------- Trust strip ---------- */
+.trust-strip {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.trust-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+.trust-item {
+  flex: 1 1 200px;
+  text-align: center;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+}
+
+/* ---------- Services ---------- */
+.services { padding: 64px 0; }
+.section-sub { margin-top: -6px; margin-bottom: 2em; }
+
+.services-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.services-grid li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+}
+.service-icon { font-size: 1.4rem; }
+
+/* ---------- Gallery / before-after slider ---------- */
+.gallery { padding: 64px 0; background: var(--color-surface); }
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.ba-slider {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #ddd;
+  touch-action: pan-y;
+}
+.ba-slider img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+.ba-before-wrap {
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+.ba-before-wrap img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  max-width: none;
+  width: 100%; /* overridden inline by JS to match the slider's full width */
+}
+.ba-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  z-index: 3;
+}
+.ba-handle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 100%;
+  background: #fff;
+  transform: translateX(-50%);
+  pointer-events: none;
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+  z-index: 2;
+}
+.ba-handle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+.ba-handle::after {
+  content: "⇔";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  color: var(--color-primary);
+}
+.ba-tag {
+  position: absolute;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0,0,0,0.55);
+  z-index: 2;
+  pointer-events: none;
+}
+.ba-tag-before { left: 10px; }
+.ba-tag-after { right: 10px; }
+
+/* ---------- Contact / final CTA ---------- */
+.contact {
+  padding: 64px 0 80px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--color-bg) 0%, #efe9e1 100%);
+}
+.contact-inner { max-width: 640px; margin: 0 auto; }
+.contact .cta-group { justify-content: center; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--color-primary-dark);
+  color: rgba(255,255,255,0.75);
+  padding: 28px 0;
+  font-size: 0.9rem;
+}
+.footer-inner { text-align: center; }
+.footer-links a { color: #fff; text-decoration: none; }
+.footer-links a:hover { text-decoration: underline; }
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 480px) {
+  .header-cta .btn span { display: none; }
+  .header-cta .btn svg { margin: 0; }
+  .cta-group { flex-direction: column; }
+  .cta-group .btn { width: 100%; justify-content: center; }
+}
