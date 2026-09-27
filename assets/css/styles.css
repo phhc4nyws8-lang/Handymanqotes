@@ -110,8 +110,8 @@ input:focus-visible {
 .btn-call { background: var(--color-sky); color: #fff; }
 .btn-call:hover { background: var(--color-sky-dark); border-color: var(--color-orange-dark); }
 
-.btn-email { background: var(--color-blue); color: #fff; }
-.btn-email:hover { background: var(--color-blue-dark); border-color: var(--color-orange-dark); }
+.btn-email { background: var(--color-orange); color: #fff; border-color: var(--color-orange-dark); }
+.btn-email:hover { background: var(--color-orange-dark); }
 
 .btn-small { padding: 9px 16px; font-size: 0.9rem; }
 .btn-small svg { width: 16px; height: 16px; }
