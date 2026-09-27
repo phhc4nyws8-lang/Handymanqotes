@@ -24,8 +24,8 @@
   ============================================================
   QUICK-EDIT CHECKLIST BEFORE GOING LIVE
   ============================================================
-  1. Phone number:  search for  tel:+15103616584   (appears 3x)
-  2. Email address: search for  james@jchandyman.work  (appears 3x)
+  1. Phone number is set: (510) 361-6584 — double-check it before launch.
+  2. Email is set: james@jchandyman.work — double-check it before launch.
   3. Business name / owner name: search "JC Handyman" and "Owner Name"
   4. Service area city/region: search "[Your Service Area]"
   5. Before/after photos: drop files in assets/img/gallery/
@@ -83,7 +83,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.4 21 3 13.6 3 4.5c0-.6.4-1 1-1h3.3c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>
           <span>Call (510) 361-6584</span>
         </a>
-        <a href="mailto:james@jchandyman.work?subject=Handyman%20Quote%20Request" class="btn btn-email">
+        <a href="mailto:james@jchandyman.work?subject=Handyman%20Quote%20Request" class="btn btn-email" data-open-modal="quote-modal">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5C2 4.7 2.7 4 3.5 4h17c.8 0 1.5.7 1.5 1.5v13c0 .8-.7 1.5-1.5 1.5h-17c-.8 0-1.5-.7-1.5-1.5v-13zm2.2.5 7.8 6.2 7.8-6.2H4.2zM20 7.9l-8 6.4-8-6.4v9.6h16V7.9z"/></svg>
           <span>Email for a Free Quote</span>
         </a>
@@ -176,7 +176,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.4 21 3 13.6 3 4.5c0-.6.4-1 1-1h3.3c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>
           <span>Call (510) 361-6584</span>
         </a>
-        <a href="mailto:james@jchandyman.work?subject=Handyman%20Quote%20Request" class="btn btn-email btn-large">
+        <a href="mailto:james@jchandyman.work?subject=Handyman%20Quote%20Request" class="btn btn-email btn-large" data-open-modal="quote-modal">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5C2 4.7 2.7 4 3.5 4h17c.8 0 1.5.7 1.5 1.5v13c0 .8-.7 1.5-1.5 1.5h-17c-.8 0-1.5-.7-1.5-1.5v-13zm2.2.5 7.8 6.2 7.8-6.2H4.2zM20 7.9l-8 6.4-8-6.4v9.6h16V7.9z"/></svg>
           <span>james@jchandyman.work</span>
         </a>
@@ -196,6 +196,32 @@
     </p>
   </div>
 </footer>
+
+<dialog id="quote-modal" class="modal">
+  <div class="modal-header">
+    <h3>Get a Free Quote</h3>
+    <button type="button" class="modal-close" data-close-modal aria-label="Close">&times;</button>
+  </div>
+  <form id="quote-form" class="modal-body">
+    <div class="field">
+      <label for="quote-name">Name</label>
+      <input type="text" id="quote-name" name="name" required autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="quote-phone">Phone <span class="optional">(optional)</span></label>
+      <input type="tel" id="quote-phone" name="phone" autocomplete="tel">
+    </div>
+    <div class="field">
+      <label for="quote-message">What do you need help with?</label>
+      <textarea id="quote-message" name="message" rows="4" required placeholder="e.g. Fixing a leaky faucet and patching drywall in the hallway"></textarea>
+    </div>
+    <p class="modal-note">This opens your email app with the message filled in, addressed to james@jchandyman.work — you just hit send.</p>
+    <button type="submit" class="btn btn-email modal-submit">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5C2 4.7 2.7 4 3.5 4h17c.8 0 1.5.7 1.5 1.5v13c0 .8-.7 1.5-1.5 1.5h-17c-.8 0-1.5-.7-1.5-1.5v-13zm2.2.5 7.8 6.2 7.8-6.2H4.2zM20 7.9l-8 6.4-8-6.4v9.6h16V7.9z"/></svg>
+      <span>Open Email to Send</span>
+    </button>
+  </form>
+</dialog>
 
 <script src="assets/js/main.js"></script>
 </body>
