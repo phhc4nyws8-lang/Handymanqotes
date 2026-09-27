@@ -1,4 +1,4 @@
-# Handyman.work
+# JC Handyman (jchandyman.work)
 
 One-page landing site for a handyman/contractor business. Static
 HTML/CSS/JS — no build step, no framework, no dependencies.
@@ -7,9 +7,8 @@ HTML/CSS/JS — no build step, no framework, no dependencies.
 
 1. **Phone number** — find/replace `+15551234567` (tel: links) and
    `(555) 123-4567` (display text) in `index.html`.
-2. **Email** — find/replace `contact@handyman.work` in `index.html`.
-3. **Business/owner name** — replace `Handyman.work` and `Owner Name`
-   in the footer and page `<title>`.
+2. **Email** — find/replace `contact@jchandyman.work` in `index.html`.
+3. **Business/owner name** — replace `Owner Name` in the footer.
 4. **Service area** — replace `[Your Service Area]` (hero text, footer,
    and the `areaServed` field in the JSON-LD block in `<head>`).
 5. **Services list** — edit the `<li>` items in the Services section.
@@ -33,10 +32,10 @@ assets/
 **Option A — cPanel File Manager (simplest)**
 1. Log in to Namecheap → hosting dashboard → cPanel.
 2. Open **File Manager** → navigate to `public_html` (this is what
-   `handyman.work` serves).
+   `jchandyman.work` serves).
 3. Upload `index.html` and the `assets/` folder here (keep the folder
    structure intact — don't flatten it).
-4. Visit `https://handyman.work` to confirm it's live.
+4. Visit `https://jchandyman.work` to confirm it's live.
 
 **Option B — FTP**
 1. In cPanel, create/find FTP credentials (or use the account you set
