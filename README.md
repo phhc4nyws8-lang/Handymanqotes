@@ -3,17 +3,19 @@
 One-page landing site for a handyman/contractor business. Static
 HTML/CSS/JS — no build step, no framework, no dependencies.
 
-## Before you launch — required edits
+Contact info, business name, and service area are already filled in:
+phone (510) 361-6584, james@jchandyman.work, James Callahan, San
+Francisco Bay Area. Double-check those before launch.
 
-1. **Phone number** — find/replace `+15103616584` (tel: links) and
-   `(510) 361-6584` (display text) in `index.html`.
-2. **Email** — find/replace `james@jchandyman.work` in `index.html`.
-3. **Business/owner name** — replace `Owner Name` in the footer.
-4. **Service area** — replace `[Your Service Area]` (hero text, footer,
-   and the `areaServed` field in the JSON-LD block in `<head>`).
-5. **Services list** — edit the `<li>` items in the Services section.
-6. **Photos** — replace the placeholder files in `assets/img/gallery/`
-   with real before/after photos. See `assets/img/README.md`.
+## Before you launch — remaining edits
+
+1. **Services list** — edit the numbered `<li>` items in the Services
+   section if the service list changes.
+2. **Photos** — replace the placeholder files in `assets/img/gallery/`
+   with real before/after photos, and update each `<figcaption>` with
+   the real job type/neighborhood. See `assets/img/README.md`.
+3. **Favicon / social image** — replace `assets/img/favicon.ico` and
+   `assets/img/og-cover.jpg` with real branded images (optional).
 
 ## Structure
 
