@@ -61,22 +61,21 @@ export function EstimatePanel({
                 <div className="bg-stone-100 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-stone-700">
                   {PHASE_LABEL[phase]}
                 </div>
-                <table className="w-full text-sm">
-                  <tbody>
-                    {items.map((li) => (
-                      <tr key={li.id} className="border-t border-stone-100">
-                        <td className="px-3 py-1.5 text-stone-700">{li.description}</td>
-                        <td className="px-3 py-1.5 text-right text-stone-500 whitespace-nowrap">
-                          {li.quantity} {UNIT_LABEL[li.unit]}
-                        </td>
-                        <td className="px-3 py-1.5 text-right text-stone-500 whitespace-nowrap">${li.unitCost}</td>
-                        <td className="px-3 py-1.5 text-right font-semibold text-stone-900 whitespace-nowrap">
-                          ${li.totalCost.toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <ul>
+                  {items.map((li) => (
+                    <li key={li.id} className="border-t border-stone-100 px-3 py-2 text-sm">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                        <span className="text-stone-700">{li.description}</span>
+                        <div className="flex items-center justify-between gap-3 sm:shrink-0 sm:justify-end sm:gap-4">
+                          <span className="whitespace-nowrap text-stone-500">
+                            {li.quantity} {UNIT_LABEL[li.unit]} × ${li.unitCost}
+                          </span>
+                          <span className="whitespace-nowrap font-semibold text-stone-900">${li.totalCost.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
             );
           })}

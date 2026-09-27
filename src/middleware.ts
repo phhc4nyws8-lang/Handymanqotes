@@ -23,5 +23,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|uploads).*)"],
+  // manifest.json/sw.js/icons must stay reachable without a session — the
+  // browser (and, for photos, the customer's email client) fetches these
+  // before or entirely outside of any login.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|uploads|manifest.json|sw.js|icons|apple-touch-icon.png|icon.png).*)"],
 };

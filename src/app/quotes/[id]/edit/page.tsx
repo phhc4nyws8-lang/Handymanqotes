@@ -23,16 +23,16 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
             ← All quotes
           </Link>
         </div>
-        <div className="mt-1 flex items-center justify-between">
+        <div className="mt-1 flex flex-wrap items-start justify-between gap-2">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900">
+            <h1 className="text-xl font-bold text-stone-900 sm:text-2xl">
               {quote.number} — {PROJECT_TYPE_LABEL[quote.projectType]}
             </h1>
             <p className="text-sm text-stone-500">
               {quote.customer.name} · {quote.customer.email} {quote.customer.phone ? `· ${quote.customer.phone}` : ""}
             </p>
           </div>
-          <span className="rounded-full bg-stone-200 px-3 py-1 text-xs font-semibold text-stone-700">{quote.status}</span>
+          <span className="shrink-0 rounded-full bg-stone-200 px-3 py-1 text-xs font-semibold text-stone-700">{quote.status}</span>
         </div>
       </div>
 
@@ -43,17 +43,17 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
           const afterPhoto = [...space.photos].reverse().find((p) => p.kind === "AFTER");
           return (
             <div key={space.id} className="rounded-lg border border-stone-200 bg-white p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <h3 className="font-semibold text-stone-900">
                   {space.name}{" "}
                   <span className="font-normal text-stone-400">
                     ({space.lengthFt}&apos; × {space.widthFt}&apos; × {space.heightFt}&apos;)
                   </span>
                 </h3>
-                <form action={removeSpaceAction}>
+                <form action={removeSpaceAction} className="shrink-0">
                   <input type="hidden" name="quoteId" value={quote.id} />
                   <input type="hidden" name="spaceId" value={space.id} />
-                  <button type="submit" className="text-xs text-red-500 hover:underline">
+                  <button type="submit" className="py-1 text-xs text-red-500 hover:underline">
                     Remove room
                   </button>
                 </form>
@@ -76,16 +76,16 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
                 ) : (
                   <ul className="mt-1 space-y-1">
                     {space.materialSelections.map((sel) => (
-                      <li key={sel.id} className="flex items-center justify-between rounded bg-stone-50 px-2 py-1 text-sm">
+                      <li key={sel.id} className="flex flex-wrap items-center justify-between gap-2 rounded bg-stone-50 px-2 py-1.5 text-sm">
                         <span>
                           <span className="font-medium text-stone-700">{CATEGORY_LABEL[sel.category]}:</span>{" "}
                           {sel.materialPrice.name}
                           {sel.quantityOverride ? ` (${sel.quantityOverride} ${UNIT_LABEL[sel.materialPrice.unit]})` : ""}
                         </span>
-                        <form action={removeSelectionAction}>
+                        <form action={removeSelectionAction} className="shrink-0">
                           <input type="hidden" name="quoteId" value={quote.id} />
                           <input type="hidden" name="selectionId" value={sel.id} />
-                          <button type="submit" className="text-xs text-red-500 hover:underline">
+                          <button type="submit" className="py-1 text-xs text-red-500 hover:underline">
                             Remove
                           </button>
                         </form>

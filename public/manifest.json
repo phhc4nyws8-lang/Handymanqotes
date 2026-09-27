@@ -1,0 +1,16 @@
+{
+  "name": "Handyman Quotes",
+  "short_name": "Quotes",
+  "description": "Build itemized remodel quotes with AI before/after photos for Northern California handyman jobs.",
+  "start_url": "/quotes",
+  "id": "/quotes",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f0e8",
+  "theme_color": "#ea580c",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

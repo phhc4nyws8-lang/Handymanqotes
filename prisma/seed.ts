@@ -448,8 +448,11 @@ async function main() {
     });
   }
 
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@example.com";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "changeme123";
+  // `||` (not `??`) deliberately, so a blank-but-set env var (e.g. an unfilled
+  // "" placeholder in .env.example) still falls back to the default instead
+  // of creating a login with an empty email/password.
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@example.com";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || "changeme123";
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 
   await prisma.user.upsert({

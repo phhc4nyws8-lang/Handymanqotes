@@ -23,7 +23,7 @@ export function SpacePhotos({
   const [genState, genFormAction, genPending] = useActionState(generateAfterPhotoAction, initial);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">Before</p>
         {beforeUrl ? (
@@ -35,14 +35,14 @@ export function SpacePhotos({
             No photo yet
           </div>
         )}
-        <form action={uploadFormAction} className="mt-2 flex items-center gap-2">
+        <form action={uploadFormAction} className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
           <input type="hidden" name="quoteId" value={quoteId} />
           <input type="hidden" name="spaceId" value={spaceId} />
-          <input name="file" type="file" accept="image/jpeg,image/png,image/webp" required className="text-xs" />
+          <input name="file" type="file" accept="image/jpeg,image/png,image/webp" required className="min-w-0 flex-1 text-xs" />
           <button
             type="submit"
             disabled={uploadPending}
-            className="rounded-md bg-stone-800 px-2 py-1 text-xs font-semibold text-white hover:bg-stone-900 disabled:opacity-60"
+            className="shrink-0 rounded-md bg-stone-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-stone-900 disabled:opacity-60"
           >
             {uploadPending ? "Uploading..." : "Upload"}
           </button>
@@ -72,7 +72,7 @@ export function SpacePhotos({
           <button
             type="submit"
             disabled={genPending || !beforeUrl}
-            className="rounded-md bg-brand-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+            className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
           >
             {genPending ? "Generating..." : afterUrl ? "Regenerate After Photo" : "Generate After Photo"}
           </button>

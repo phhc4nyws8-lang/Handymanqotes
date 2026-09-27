@@ -13,6 +13,22 @@ Next.js (App Router) + TypeScript + Prisma + Tailwind. Server Actions handle
 all mutations — no separate API layer. SQLite in dev (zero setup); swap to
 Postgres for production (see below).
 
+## Using it on a phone
+
+This is a mobile-responsive, installable web app (a PWA) — not a native
+App Store / Play Store app. On a phone, open it in the browser and:
+
+- **iOS (Safari):** Share button → "Add to Home Screen"
+- **Android (Chrome):** menu (⋮) → "Install app" (or a banner offers this automatically)
+
+Either way it launches full-screen with its own icon, no browser chrome. The
+photo upload button already opens the phone's camera/photo picker natively —
+no extra setup needed there. See `public/manifest.json` and `public/sw.js`
+if you ever want to add real offline support (the current service worker is
+intentionally a no-op beyond satisfying installability — this app is
+behind login and shows live, frequently-changing data, so it deliberately
+does not cache pages).
+
 ## Quick start
 
 ```bash
