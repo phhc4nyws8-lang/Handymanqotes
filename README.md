@@ -14,8 +14,9 @@ Francisco Bay Area. Double-check those before launch.
 2. **Photos** — replace the placeholder files in `assets/img/gallery/`
    with real before/after photos, and update each `<figcaption>` with
    the real job type/neighborhood. See `assets/img/README.md`.
-3. **Favicon / social image** — replace `assets/img/favicon.ico` and
-   `assets/img/og-cover.jpg` with real branded images (optional).
+
+The logo, favicon, and social preview image are the real JC Handyman
+brand assets already — nothing to swap there.
 
 ## Structure
 
@@ -26,7 +27,9 @@ assets/
   js/main.js
   img/
     gallery/before-1.jpg, after-1.jpg, ...
-    og-cover.jpg
+    logo/logo-mark.svg, logo-mark-white.svg
+    favicon.png
+    og-cover.png
 ```
 
 ## Deploying to Namecheap

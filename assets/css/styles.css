@@ -1,5 +1,7 @@
 /* ==========================================================================
    JC Handyman — landing page styles
+   Brand colors sourced from the JC Handyman logo kit:
+   bg #05785B, icon/font #9AB1D6, slogan #AEC5EA
    ========================================================================== */
 
 :root {
@@ -9,13 +11,12 @@
   --color-text-muted: #57666d;
   --color-hairline: rgba(22, 35, 42, 0.1);
 
-  --color-forest: #1f6b3b;
-  --color-forest-dark: #123c22;
-  --color-blue-dark: #24699a;
-  --color-sky: #29abe2;
-  --color-sky-dark: #1e8bbf;
-  --color-orange: #e8622c;
-  --color-orange-dark: #c74f1f;
+  --color-teal: #05785b;        /* brand: logo background */
+  --color-teal-dark: #03432f;
+  --color-blue: #3d5a80;        /* brand: deepened from logo icon/font blue #9ab1d6 for AA contrast */
+  --color-blue-dark: #2e4463;
+  --color-periwinkle: #9ab1d6;  /* brand: logo icon/font color, used as a light accent */
+  --color-periwinkle-tint: #aec5ea; /* brand: logo slogan color */
 
   --font-display: 'Space Grotesk', 'Inter', sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -46,7 +47,7 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 h1 { font-size: clamp(2.2rem, 4.4vw, 3.4rem); }
-h1 em { font-style: normal; color: var(--color-forest); }
+h1 em { font-style: normal; color: var(--color-teal); }
 h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); max-width: 20ch; }
 h3 { font-size: 1.05rem; }
 p { margin: 0 0 1em; color: var(--color-text-muted); }
@@ -65,7 +66,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--color-orange);
+  outline: 2px solid var(--color-blue);
   outline-offset: 2px;
 }
 
@@ -75,16 +76,16 @@ textarea:focus-visible {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-orange);
+  color: var(--color-teal);
   margin: 0 0 0.8em;
 }
-.eyebrow-on-dark { color: #f2a582; }
+.eyebrow-on-dark { color: var(--color-periwinkle-tint); }
 
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  background: var(--color-forest);
+  background: var(--color-teal);
   color: #fff;
   padding: 10px 16px;
   z-index: 100;
@@ -105,17 +106,11 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 32px;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
-.logo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--color-text);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-}
+.logo { display: inline-flex; align-items: center; }
+.logo-img { height: 40px; width: auto; }
 .site-nav {
   display: flex;
   gap: 28px;
@@ -148,11 +143,11 @@ textarea:focus-visible {
 .btn svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
 .btn:active { transform: translateY(1px); }
 
-.btn-call { background: var(--color-sky); color: #fff; }
-.btn-call:hover { background: var(--color-sky-dark); }
+.btn-call { background: var(--color-blue); color: #fff; }
+.btn-call:hover { background: var(--color-blue-dark); }
 
-.btn-email { background: var(--color-orange); color: #fff; }
-.btn-email:hover { background: var(--color-orange-dark); }
+.btn-email { background: var(--color-teal); color: #fff; }
+.btn-email:hover { background: var(--color-teal-dark); }
 
 .btn-small { padding: 8px 16px; font-size: 0.88rem; }
 .btn-small svg { width: 15px; height: 15px; }
@@ -200,7 +195,7 @@ textarea:focus-visible {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--color-forest);
+  background: var(--color-teal);
 }
 
 .hero-panel {
@@ -232,7 +227,7 @@ textarea:focus-visible {
 .step-index {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--color-orange);
+  color: var(--color-teal);
   font-size: 0.95rem;
   flex-shrink: 0;
   padding-top: 1px;
@@ -261,14 +256,14 @@ textarea:focus-visible {
 .service-index {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--color-orange);
+  color: var(--color-teal);
   flex-shrink: 0;
   min-width: 2ch;
 }
 
 /* ---------- Why ---------- */
 .why {
-  background: var(--color-forest-dark);
+  background: var(--color-teal-dark);
   color: #fff;
   padding: 72px 0;
 }
@@ -367,8 +362,8 @@ textarea:focus-visible {
   transform: translate(-50%, -50%);
   width: 10px;
   height: 10px;
-  border-right: 2px solid var(--color-forest-dark);
-  border-bottom: 2px solid var(--color-forest-dark);
+  border-right: 2px solid var(--color-teal-dark);
+  border-bottom: 2px solid var(--color-teal-dark);
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 .ba-tag {
@@ -385,7 +380,7 @@ textarea:focus-visible {
   pointer-events: none;
 }
 .ba-tag-before { left: 10px; background: rgba(22, 35, 42, 0.65); }
-.ba-tag-after { right: 10px; background: var(--color-orange); }
+.ba-tag-after { right: 10px; background: var(--color-teal); }
 .ba-slider figcaption {
   margin-top: 10px;
   font-size: 0.88rem;
@@ -397,18 +392,20 @@ textarea:focus-visible {
 .contact {
   padding: 84px 0;
   text-align: center;
-  background: var(--color-forest);
+  background: var(--color-teal);
   color: #fff;
 }
-.contact .eyebrow { color: #d9ecdf; }
+.contact .eyebrow { color: var(--color-periwinkle-tint); }
 .contact h2 { color: #fff; margin-left: auto; margin-right: auto; }
-.contact-sub { color: rgba(255,255,255,0.82); max-width: 46ch; margin: 0 auto 28px; }
+.contact-sub { color: rgba(255,255,255,0.85); max-width: 46ch; margin: 0 auto 28px; }
 .contact-inner { max-width: 640px; margin: 0 auto; }
 .contact .cta-group { justify-content: center; }
+.contact .btn-email { background: var(--color-blue); }
+.contact .btn-email:hover { background: var(--color-blue-dark); }
 
 /* ---------- Footer ---------- */
 .site-footer {
-  background: var(--color-forest-dark);
+  background: var(--color-teal-dark);
   color: rgba(255,255,255,0.75);
   padding: 48px 0 24px;
   font-size: 0.92rem;
@@ -420,13 +417,7 @@ textarea:focus-visible {
   padding-bottom: 32px;
   border-bottom: 1px solid rgba(255,255,255,0.12);
 }
-.footer-brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: #fff;
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-}
+.footer-logo { height: 34px; width: auto; margin-bottom: 12px; }
 .footer-grid p { color: rgba(255,255,255,0.65); margin: 0; }
 .footer-nav, .footer-contact {
   display: flex;
@@ -444,7 +435,7 @@ textarea:focus-visible {
 /* ---------- Quote modal ---------- */
 .modal {
   border: none;
-  border-top: 4px solid var(--color-orange);
+  border-top: 4px solid var(--color-teal);
   border-radius: 12px;
   padding: 0;
   width: 90vw;
@@ -492,7 +483,8 @@ textarea:focus-visible {
 }
 
 .modal-note { font-size: 0.85rem; margin-bottom: 16px; }
-.modal-submit { width: 100%; justify-content: center; }
+.modal-submit { width: 100%; justify-content: center; background: var(--color-teal); }
+.modal-submit:hover { background: var(--color-teal-dark); }
 
 /* ---------- Scroll reveal ---------- */
 [data-reveal] { opacity: 1; transform: none; }
