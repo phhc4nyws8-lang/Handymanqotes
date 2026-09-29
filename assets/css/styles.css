@@ -106,11 +106,11 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 32px;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 .logo { display: inline-flex; align-items: center; }
-.logo-img { height: 40px; width: auto; }
+.logo-img { height: 60px; width: auto; }
 .site-nav {
   display: flex;
   gap: 28px;
