@@ -60,8 +60,16 @@ with no API keys, before connecting real services.
 
 ### Going live
 
-1. **AI photos** — get a Gemini API key at https://aistudio.google.com/apikey
-   and set `GEMINI_API_KEY` in `.env`.
+1. **AI photos** — pick one (or set up both and switch with `AI_IMAGE_PROVIDER`):
+   - Google Gemini: get a key at https://aistudio.google.com/apikey, set `GEMINI_API_KEY`.
+   - OpenAI (`gpt-image-1`): get a key at https://platform.openai.com/api-keys, set `OPENAI_API_KEY`.
+
+   Both require billing enabled on the provider account before generation
+   works — a bare API key alone isn't enough. **Google Cloud Billing in
+   particular rejects prepaid/virtual debit cards** (it's a fraud-prevention
+   policy aimed at cloud-compute abuse) — use a standard bank-issued card.
+   `AI_IMAGE_PROVIDER` ("gemini" or "openai") picks explicitly when both keys
+   are set; left blank, the app auto-picks (openai wins if both are present).
 2. **Email** — create a [Resend](https://resend.com) account, verify a
    sending domain, get an API key, and set `RESEND_API_KEY` and `EMAIL_FROM`
    in `.env`.
@@ -72,8 +80,9 @@ with no API keys, before connecting real services.
 
 Both the AI image generator and the email sender are written behind small
 interfaces (`src/lib/ai-photo`, `src/lib/email`) specifically so a different
-provider (OpenAI's image edit API, SendGrid, Postmark, etc.) can be swapped
-in later without touching any calling code.
+provider can be swapped in without touching any calling code — that's how
+Gemini and OpenAI coexist today, each a self-contained implementation of the
+same `ImageGenerator` interface.
 
 ## What's real here, and what isn't
 

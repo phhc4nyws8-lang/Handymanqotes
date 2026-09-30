@@ -8,21 +8,30 @@ export { MockImageGenerator } from "./mock";
 let cached: ImageGenerator | null = null;
 
 /**
- * Picks the real Gemini implementation when the app is out of demo mode and
- * a key is configured; falls back to the mock otherwise. Cached per process
- * since neither implementation holds per-request state. The Gemini SDK is
- * dynamically imported so it's never loaded (or required to be installed
- * correctly) while running in demo mode.
+ * Picks the real image generator once the app is out of demo mode:
+ * `AI_IMAGE_PROVIDER` ("gemini" | "openai") selects explicitly when set;
+ * otherwise whichever key is present wins (OpenAI first if both are set).
+ * Falls back to the mock in demo mode or when no matching key is configured.
+ * Cached per process since no implementation holds per-request state. Each
+ * provider's SDK is dynamically imported so neither is loaded while running
+ * in demo mode or unused.
  */
 export async function getImageGenerator(): Promise<ImageGenerator> {
   if (cached) return cached;
 
   const demoMode = process.env.DEMO_MODE !== "false";
-  const apiKey = process.env.GEMINI_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const explicitProvider = process.env.AI_IMAGE_PROVIDER?.toLowerCase();
 
-  if (!demoMode && apiKey) {
+  const provider = explicitProvider || (openaiKey ? "openai" : geminiKey ? "gemini" : null);
+
+  if (!demoMode && provider === "openai" && openaiKey) {
+    const { OpenAIImageGenerator } = await import("./openai");
+    cached = new OpenAIImageGenerator(openaiKey);
+  } else if (!demoMode && provider === "gemini" && geminiKey) {
     const { GeminiImageGenerator } = await import("./gemini");
-    cached = new GeminiImageGenerator(apiKey);
+    cached = new GeminiImageGenerator(geminiKey);
   } else {
     cached = new MockImageGenerator();
   }

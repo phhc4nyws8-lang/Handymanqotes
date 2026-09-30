@@ -6,11 +6,14 @@ export default function QuotesLayout({ children }: { children: React.ReactNode }
   // AND that service's own keys are configured, so the two can be in different
   // states (e.g. real email but still-mocked photos).
   const globalDemoMode = process.env.DEMO_MODE !== "false";
-  const photosAreDemo = globalDemoMode || !process.env.GEMINI_API_KEY;
+  const hasImageProviderKey = Boolean(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY);
+  const photosAreDemo = globalDemoMode || !hasImageProviderKey;
   const emailIsDemo = globalDemoMode || !process.env.RESEND_API_KEY || !process.env.EMAIL_FROM;
 
   const demoParts = [photosAreDemo && 'AI "after" photos', emailIsDemo && "customer emails"].filter(Boolean);
-  const missingConfig = [photosAreDemo && "GEMINI_API_KEY", emailIsDemo && "RESEND_API_KEY + EMAIL_FROM"].filter(Boolean);
+  const missingConfig = [photosAreDemo && "GEMINI_API_KEY or OPENAI_API_KEY", emailIsDemo && "RESEND_API_KEY + EMAIL_FROM"].filter(
+    Boolean,
+  );
 
   return (
     <div className="min-h-screen bg-stone-100">
