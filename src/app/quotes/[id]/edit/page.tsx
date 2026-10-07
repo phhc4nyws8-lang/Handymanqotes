@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getQuoteDetail, listPriceBook } from "@/lib/quotes/queries";
 import { removeSpaceAction, removeSelectionAction } from "@/lib/quotes/actions";
-import { PROJECT_TYPE_LABEL, CATEGORY_LABEL, UNIT_LABEL } from "@/lib/quotes/labels";
+import { PROJECT_TYPE_LABEL, CATEGORY_LABEL, UNIT_LABEL, formatFeetInches } from "@/lib/quotes/labels";
 import { AddSpaceForm } from "./AddSpaceForm";
 import { AddSelectionForm } from "./AddSelectionForm";
 import { SpacePhotos } from "./SpacePhotos";
@@ -47,7 +47,8 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
                 <h3 className="font-semibold text-stone-900">
                   {space.name}{" "}
                   <span className="font-normal text-stone-400">
-                    ({space.lengthFt}&apos; × {space.widthFt}&apos; × {space.heightFt}&apos;)
+                    ({formatFeetInches(space.lengthFt)} × {formatFeetInches(space.widthFt)}
+                    {quote.projectType !== "FLOORING" && <> × {formatFeetInches(space.heightFt)} wall height</>})
                   </span>
                 </h3>
                 <form action={removeSpaceAction} className="shrink-0">
@@ -94,14 +95,14 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
                   </ul>
                 )}
                 <div className="mt-2">
-                  <AddSelectionForm quoteId={quote.id} spaceId={space.id} priceBook={priceBook} />
+                  <AddSelectionForm quoteId={quote.id} spaceId={space.id} space={space} priceBook={priceBook} />
                 </div>
               </div>
             </div>
           );
         })}
 
-        <AddSpaceForm quoteId={quote.id} />
+        <AddSpaceForm quoteId={quote.id} projectType={quote.projectType} />
       </section>
 
       <section>

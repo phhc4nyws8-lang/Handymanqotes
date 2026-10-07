@@ -36,6 +36,23 @@ function num(formData: FormData, key: string): number {
   return Number.isFinite(value) ? value : 0;
 }
 
+/**
+ * Reads a measurement submitted as separate whole-feet + inches (0-11)
+ * fields and combines them to decimal feet for storage — contractors think
+ * in feet/inches, not decimal feet, so that's what the forms collect.
+ */
+function feetAndInches(formData: FormData, feetKey: string, inchesKey: string, fallbackFt = 0): number {
+  const feetRaw = formData.get(feetKey);
+  const inchesRaw = formData.get(inchesKey);
+  if (feetRaw === null && inchesRaw === null) return fallbackFt;
+
+  const feet = Number(feetRaw ?? 0);
+  const inches = Number(inchesRaw ?? 0);
+  const safeFeet = Number.isFinite(feet) ? feet : 0;
+  const safeInches = Number.isFinite(inches) ? inches : 0;
+  return safeFeet + safeInches / 12;
+}
+
 // ---------------------------------------------------------------------------
 // Quote creation
 // ---------------------------------------------------------------------------
@@ -49,9 +66,9 @@ export async function createQuoteAction(formData: FormData): Promise<never> {
   const customerAddress = str(formData, "customerAddress") || null;
   const projectType = str(formData, "projectType") as ProjectType;
   const spaceName = str(formData, "spaceName") || "Main Space";
-  const lengthFt = num(formData, "lengthFt");
-  const widthFt = num(formData, "widthFt");
-  const heightFt = num(formData, "heightFt") || 8;
+  const lengthFt = feetAndInches(formData, "lengthFt", "lengthIn");
+  const widthFt = feetAndInches(formData, "widthFt", "widthIn");
+  const heightFt = feetAndInches(formData, "heightFt", "heightIn", 8);
 
   if (!customerName || !customerEmail || !projectType || lengthFt <= 0 || widthFt <= 0) {
     throw new Error("Missing required fields to create a quote.");
@@ -85,9 +102,9 @@ export async function addSpaceAction(formData: FormData): Promise<void> {
   await requireUser();
   const quoteId = str(formData, "quoteId");
   const name = str(formData, "name") || "Additional Space";
-  const lengthFt = num(formData, "lengthFt");
-  const widthFt = num(formData, "widthFt");
-  const heightFt = num(formData, "heightFt") || 8;
+  const lengthFt = feetAndInches(formData, "lengthFt", "lengthIn");
+  const widthFt = feetAndInches(formData, "widthFt", "widthIn");
+  const heightFt = feetAndInches(formData, "heightFt", "heightIn", 8);
 
   if (lengthFt <= 0 || widthFt <= 0) throw new Error("Length and width must be greater than zero.");
 

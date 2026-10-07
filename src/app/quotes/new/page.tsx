@@ -1,7 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import { createQuoteAction } from "@/lib/quotes/actions";
 import { PROJECT_TYPE_LABEL } from "@/lib/quotes/labels";
+import { FeetInchesField } from "../FeetInchesField";
+import type { ProjectType } from "@prisma/client";
 
 export default function NewQuotePage() {
+  const [projectType, setProjectType] = useState<ProjectType>("BATHROOM_REMODEL");
+  const needsWallHeight = projectType !== "FLOORING";
+
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="text-2xl font-bold text-stone-900">New Quote</h1>
@@ -28,6 +36,8 @@ export default function NewQuotePage() {
               id="projectType"
               name="projectType"
               required
+              value={projectType}
+              onChange={(e) => setProjectType(e.target.value as ProjectType)}
               className="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {Object.entries(PROJECT_TYPE_LABEL).map(([value, label]) => (
@@ -42,11 +52,18 @@ export default function NewQuotePage() {
         <fieldset className="space-y-4">
           <legend className="text-sm font-semibold text-stone-900">First room / space</legend>
           <Field label="Name" name="spaceName" placeholder="e.g. Main Bathroom" required />
-          <div className="grid grid-cols-3 gap-3">
-            <Field label="Length (ft)" name="lengthFt" type="number" step="0.1" required />
-            <Field label="Width (ft)" name="widthFt" type="number" step="0.1" required />
-            <Field label="Height (ft)" name="heightFt" type="number" step="0.1" placeholder="8" />
+          <div className="flex flex-wrap gap-4">
+            <FeetInchesField label="Length" feetName="lengthFt" inchesName="lengthIn" required />
+            <FeetInchesField label="Width" feetName="widthFt" inchesName="widthIn" required />
+            {needsWallHeight && (
+              <FeetInchesField label="Wall height" feetName="heightFt" inchesName="heightIn" defaultFeet={8} />
+            )}
           </div>
+          {!needsWallHeight && (
+            <p className="text-xs text-stone-400">
+              Flooring jobs just need floor area — no wall height needed.
+            </p>
+          )}
         </fieldset>
 
         <button
@@ -66,14 +83,12 @@ function Field({
   type = "text",
   required,
   placeholder,
-  step,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
   placeholder?: string;
-  step?: string;
 }) {
   return (
     <div>
@@ -86,7 +101,6 @@ function Field({
         type={type}
         required={required}
         placeholder={placeholder}
-        step={step}
         className="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
       />
     </div>

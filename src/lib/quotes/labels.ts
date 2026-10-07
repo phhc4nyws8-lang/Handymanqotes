@@ -30,3 +30,14 @@ export const UNIT_LABEL: Record<string, string> = {
   EACH: "each",
   CUBIC_YARD: "cu yd",
 };
+
+/** Formats decimal feet (as stored) back into the feet'-inches" a contractor actually reads, e.g. 10.5 -> `10' 6"`. */
+export function formatFeetInches(decimalFeet: number): string {
+  let feet = Math.floor(decimalFeet);
+  let inches = Math.round((decimalFeet - feet) * 12);
+  if (inches === 12) {
+    feet += 1;
+    inches = 0;
+  }
+  return inches > 0 ? `${feet}' ${inches}"` : `${feet}'`;
+}

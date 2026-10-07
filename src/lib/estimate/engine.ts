@@ -19,16 +19,16 @@ import {
  */
 export const WALL_OPENINGS_DEDUCTION = 0.85;
 
-function floorAreaSqFt(space: SpaceInput): number {
+export function floorAreaSqFt(space: SpaceInput): number {
   return space.lengthFt * space.widthFt;
 }
 
-function wallAreaSqFt(space: SpaceInput): number {
+export function wallAreaSqFt(space: SpaceInput): number {
   const perimeter = 2 * (space.lengthFt + space.widthFt);
   return perimeter * space.heightFt * WALL_OPENINGS_DEDUCTION;
 }
 
-function perimeterLinearFt(space: SpaceInput): number {
+export function perimeterLinearFt(space: SpaceInput): number {
   return 2 * (space.lengthFt + space.widthFt);
 }
 
@@ -38,8 +38,9 @@ function perimeterLinearFt(space: SpaceInput): number {
  * CABINETRY, FIXTURE) vary too much by layout to guess safely — those
  * selections require an explicit `quantityOverride`, and the engine throws
  * a clear validation error if one is missing rather than silently guessing.
+ * Exported so the "add material" form can preview the same number live.
  */
-function computeAutoQuantity(category: MaterialCategory, space: SpaceInput | null): number | null {
+export function computeAutoQuantity(category: MaterialCategory, space: SpaceInput | null): number | null {
   if (!space) return null;
   switch (category) {
     case "FLOORING":
