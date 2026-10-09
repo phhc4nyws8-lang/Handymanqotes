@@ -1,10 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { uploadBeforePhotoAction, generateAfterPhotoAction, ActionResult } from "@/lib/quotes/actions";
+import {
+  uploadBeforePhotoAction,
+  startGenerateAfterPhotoAction,
+  checkAfterPhotoStatusAction,
+  ActionResult,
+} from "@/lib/quotes/actions";
 
 const initial: ActionResult = { error: null };
+const POLL_INTERVAL_MS = 3000;
 
 export function SpacePhotos({
   quoteId,
@@ -12,15 +19,62 @@ export function SpacePhotos({
   beforeUrl,
   afterUrl,
   afterIsDemo,
+  initiallyPending,
 }: {
   quoteId: string;
   spaceId: string;
   beforeUrl: string | null;
   afterUrl: string | null;
   afterIsDemo: boolean;
+  initiallyPending: boolean;
 }) {
+  const router = useRouter();
   const [uploadState, uploadFormAction, uploadPending] = useActionState(uploadBeforePhotoAction, initial);
-  const [genState, genFormAction, genPending] = useActionState(generateAfterPhotoAction, initial);
+
+  const [starting, setStarting] = useState(false);
+  const [polling, setPolling] = useState(initiallyPending);
+  const [genError, setGenError] = useState<string | null>(null);
+
+  // Image generation takes 30-90+ seconds, which proved unreliable to hold
+  // open as a single request/response — see startGenerateAfterPhotoAction.
+  // Instead we poll every few seconds until the background job finishes.
+  useEffect(() => {
+    if (!polling) return;
+    const interval = setInterval(async () => {
+      const status = await checkAfterPhotoStatusAction(spaceId);
+      if (status.error) {
+        setGenError(status.error);
+        setPolling(false);
+      } else if (!status.pending) {
+        setPolling(false);
+        router.refresh();
+      }
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [polling, spaceId, router]);
+
+  async function handleGenerateClick() {
+    setStarting(true);
+    setGenError(null);
+    const formData = new FormData();
+    formData.set("quoteId", quoteId);
+    formData.set("spaceId", spaceId);
+    const result = await startGenerateAfterPhotoAction(initial, formData);
+    setStarting(false);
+    if (result.error) {
+      setGenError(result.error);
+    } else {
+      setPolling(true);
+    }
+  }
+
+  const genButtonLabel = starting
+    ? "Starting..."
+    : polling
+      ? "Generating... (up to a minute)"
+      : afterUrl
+        ? "Regenerate After Photo"
+        : "Generate After Photo";
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -63,21 +117,18 @@ export function SpacePhotos({
           </div>
         ) : (
           <div className="mt-1 flex aspect-video items-center justify-center rounded-md border border-dashed border-stone-300 text-xs text-stone-400">
-            Not generated yet
+            {polling ? "Generating..." : "Not generated yet"}
           </div>
         )}
-        <form action={genFormAction} className="mt-2">
-          <input type="hidden" name="quoteId" value={quoteId} />
-          <input type="hidden" name="spaceId" value={spaceId} />
-          <button
-            type="submit"
-            disabled={genPending || !beforeUrl}
-            className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
-          >
-            {genPending ? "Generating..." : afterUrl ? "Regenerate After Photo" : "Generate After Photo"}
-          </button>
-        </form>
-        {genState.error && <p className="mt-1 text-xs text-red-600">{genState.error}</p>}
+        <button
+          type="button"
+          onClick={handleGenerateClick}
+          disabled={starting || polling || !beforeUrl}
+          className="mt-2 rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+        >
+          {genButtonLabel}
+        </button>
+        {genError && <p className="mt-1 text-xs text-red-600">{genError}</p>}
       </div>
     </div>
   );

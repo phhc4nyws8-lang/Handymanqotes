@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getQuoteDetail, listPriceBook } from "@/lib/quotes/queries";
-import { removeSpaceAction, removeSelectionAction } from "@/lib/quotes/actions";
+import { removeSpaceAction, removeSelectionAction, isAfterPhotoGenerationPending } from "@/lib/quotes/actions";
 import { PROJECT_TYPE_LABEL, CATEGORY_LABEL, UNIT_LABEL, formatFeetInches } from "@/lib/quotes/labels";
 import { AddSpaceForm } from "./AddSpaceForm";
 import { AddSelectionForm } from "./AddSelectionForm";
@@ -14,6 +14,16 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const [quote, priceBook] = await Promise.all([getQuoteDetail(id), listPriceBook()]);
   if (!quote) notFound();
+
+  // Resume polling on reload if a background generation is still running
+  // for any of this quote's rooms (see startGenerateAfterPhotoAction).
+  const pendingSpaceIds = new Set(
+    (
+      await Promise.all(
+        quote.spaces.map(async (s) => ((await isAfterPhotoGenerationPending(s.id)) ? s.id : null)),
+      )
+    ).filter((id): id is string => id !== null),
+  );
 
   return (
     <div className="space-y-8">
@@ -67,6 +77,7 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
                   beforeUrl={beforePhoto?.url ?? null}
                   afterUrl={afterPhoto?.url ?? null}
                   afterIsDemo={afterPhoto?.provider === "mock"}
+                  initiallyPending={pendingSpaceIds.has(space.id)}
                 />
               </div>
 

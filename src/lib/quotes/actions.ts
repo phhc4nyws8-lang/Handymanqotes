@@ -201,10 +201,30 @@ export async function uploadBeforePhotoAction(_prev: ActionResult, formData: For
   return { error: null };
 }
 
-export async function generateAfterPhotoAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+/**
+ * Tracks in-flight after-photo generations, keyed by spaceId. A real
+ * gpt-image-1/Gemini call takes 30-90+ seconds — holding a single HTTP
+ * request open that long turned out to be unreliable in practice (the
+ * connection gets corrupted mid-stream on some networks before the
+ * response completes, even though the generation itself succeeded
+ * server-side). So the "start" action kicks off the work and returns
+ * immediately; the client polls `checkAfterPhotoStatusAction` every few
+ * seconds and refreshes once it's done. This relies on the Node process
+ * staying alive to finish the background work after the request that
+ * started it returns — true for a persistent server (what this app is
+ * meant to run on), not for a serverless/edge host that freezes execution
+ * once the response is sent.
+ */
+const pendingAfterPhotoGenerations = new Map<string, { error: string | null }>();
+
+export async function startGenerateAfterPhotoAction(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   await requireUser();
   const quoteId = str(formData, "quoteId");
   const spaceId = str(formData, "spaceId");
+
+  if (pendingAfterPhotoGenerations.has(spaceId)) {
+    return { error: "A generation is already running for this room — give it a minute." };
+  }
 
   const [quote, space, beforePhoto, selections] = await Promise.all([
     prisma.quote.findUniqueOrThrow({ where: { id: quoteId } }),
@@ -222,8 +242,17 @@ export async function generateAfterPhotoAction(_prev: ActionResult, formData: Fo
     materialDescriptors: selections.map((s) => s.materialPrice.imageDescriptor),
   });
 
+  pendingAfterPhotoGenerations.set(spaceId, { error: null });
+  runAfterPhotoGeneration(quoteId, spaceId, beforePhoto.url, prompt).catch((err) => {
+    console.error(`After-photo generation failed for space ${spaceId}:`, err);
+  });
+
+  return { error: null };
+}
+
+async function runAfterPhotoGeneration(quoteId: string, spaceId: string, beforePhotoUrl: string, prompt: string): Promise<void> {
   try {
-    const beforeFilePath = beforePhoto.url.replace(/^\//, "");
+    const beforeFilePath = beforePhotoUrl.replace(/^\//, "");
     const { readFile } = await import("node:fs/promises");
     const path = await import("node:path");
     const buffer = await readFile(path.join(process.cwd(), "public", beforeFilePath));
@@ -236,12 +265,34 @@ export async function generateAfterPhotoAction(_prev: ActionResult, formData: Fo
     await prisma.photo.create({
       data: { quoteId, spaceId, kind: "AFTER", url: saved.url, prompt, provider: result.provider },
     });
+    pendingAfterPhotoGenerations.delete(spaceId);
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Failed to generate the after photo." };
+    pendingAfterPhotoGenerations.set(spaceId, {
+      error: err instanceof Error ? err.message : "Failed to generate the after photo.",
+    });
   }
+}
 
-  revalidatePath(`/quotes/${quoteId}/edit`);
-  return { error: null };
+export interface AfterPhotoStatus {
+  pending: boolean;
+  error: string | null;
+}
+
+/** Polled by the client every few seconds while a generation is running. */
+export async function checkAfterPhotoStatusAction(spaceId: string): Promise<AfterPhotoStatus> {
+  await requireUser();
+  const entry = pendingAfterPhotoGenerations.get(spaceId);
+  if (!entry) return { pending: false, error: null };
+  if (entry.error) {
+    pendingAfterPhotoGenerations.delete(spaceId);
+    return { pending: false, error: entry.error };
+  }
+  return { pending: true, error: null };
+}
+
+/** Lets the edit page resume polling on load if a generation is still running (e.g. after a refresh). */
+export async function isAfterPhotoGenerationPending(spaceId: string): Promise<boolean> {
+  return pendingAfterPhotoGenerations.has(spaceId);
 }
 
 // ---------------------------------------------------------------------------
