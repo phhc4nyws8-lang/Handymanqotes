@@ -10,8 +10,9 @@ the whole thing to the customer.
 ## Stack
 
 Next.js (App Router) + TypeScript + Prisma + Tailwind. Server Actions handle
-all mutations — no separate API layer. SQLite in dev (zero setup); swap to
-Postgres for production (see below).
+all mutations — no separate API layer. Postgres (local or hosted) both in
+dev and production — see "Local Postgres for dev" below if you don't have
+one running yet.
 
 ## Using it on a phone
 
@@ -34,10 +35,25 @@ does not cache pages).
 ```bash
 npm install
 cp .env.example .env        # already done if you're reading this in the repo
-npm run db:push             # create the SQLite dev database from the schema
+# edit .env: set DATABASE_URL to a Postgres instance (see "Local Postgres
+# for dev" below if you don't have one running yet)
+npm run db:push             # create the tables from the schema
 npm run db:seed             # seed the NorCal price book + an admin login
 npm run dev
 ```
+
+### Local Postgres for dev
+
+Any local Postgres works. Quickest with Docker:
+
+```bash
+docker run -d --name handyman-dev -e POSTGRES_USER=handyman \
+  -e POSTGRES_PASSWORD=devpassword -e POSTGRES_DB=handyman_dev \
+  -p 5432:5432 postgres:16
+```
+
+Then set `DATABASE_URL="postgresql://handyman:devpassword@localhost:5432/handyman_dev"`
+in `.env`.
 
 Open http://localhost:3000, sign in with the admin login printed by the seed
 script (default `admin@example.com` / `changeme123` — **change this**, see
@@ -152,32 +168,88 @@ npm run typecheck
 npm run lint
 ```
 
-## Moving to Postgres for production
+## Deploying to Render
 
-SQLite is fine for local dev and a quick demo, but a real deployment (behind
-a load balancer, multiple instances, or a serverless host) needs Postgres:
+This app is built to run as a single Render **Web Service** (a persistent
+Node process — not serverless), with Render's managed **Postgres** for the
+database and a Render **persistent Disk** for uploaded/generated photos.
 
-1. Provision a Postgres database (Neon, Supabase, RDS, etc.).
-2. In `prisma/schema.prisma`, change:
-   ```prisma
-   datasource db {
-     provider = "postgresql"   // was "sqlite"
-     url      = env("DATABASE_URL")
-   }
-   ```
-3. Set `DATABASE_URL` to the Postgres connection string.
-4. Run `npm run db:push` (or set up proper migrations with `prisma migrate`)
-   and `npm run db:seed`.
+### 1. Create the Postgres database
 
-## Uploaded/generated photos
+In Render: New → PostgreSQL. Once it's up, copy its **Internal Database
+URL** (same-region internal connections are free of egress charges; use the
+internal URL, not the external one, since the web service lives in the same
+Render region).
 
-Photos are written to `public/uploads/` on local disk
-(`src/lib/uploads/storage.ts`). That only works for a single long-running
-server process — it will **not** work on a serverless/edge host with an
-ephemeral filesystem (e.g. Vercel's default functions). If you deploy there,
-swap `storage.ts` for an object-storage backend (S3, Cloudflare R2, etc.)
-before going live; the function signatures (`saveUploadedPhoto`,
-`saveGeneratedPhoto`) are the only thing calling code depends on.
+### 2. Create the Web Service
+
+New → Web Service, pointed at this repo/branch.
+
+- **Runtime:** Node (not Docker — there is no `Dockerfile` in this repo).
+- **Build command:** `npm install && npm run build`
+- **Start command:** `npm start`
+- The `.node-version` file (and `engines.node` in `package.json`) pin Node
+  22 so Render provisions a matching build image automatically.
+
+### 3. Add a persistent Disk for photos
+
+Web Service → Disks → Add Disk. Mount it wherever Render suggests (e.g.
+`/var/data`). Photos are stored outside the app's `public/` directory so
+they survive deploys — without a disk, every deploy wipes uploaded/generated
+photos, since Render's filesystem is otherwise ephemeral per-deploy.
+
+Set the environment variable:
+
+```
+UPLOADS_DIR=/var/data/uploads
+```
+
+(matching whatever mount path you chose). This only changes **where on
+disk** files are written — they're still served at the same `/uploads/...`
+URLs either way (`src/app/uploads/[...path]/route.ts`), so nothing else
+needs to change. A disk-backed path on a real deployed host **is** publicly
+reachable (that's what makes email image links work) — it only fails to
+work on serverless/edge hosts with no persistent filesystem at all (e.g.
+Vercel's default functions), which this deployment path isn't using.
+
+### 4. Set environment variables
+
+In the Web Service's Environment tab, set everything from `.env.example`:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | the Postgres Internal Database URL from step 1 |
+| `AUTH_SECRET` | output of `openssl rand -base64 32` |
+| `DEMO_MODE` | `false` |
+| `AI_IMAGE_PROVIDER` | `openai` (or `gemini`) |
+| `OPENAI_API_KEY` / `GEMINI_API_KEY` | your real key |
+| `RESEND_API_KEY` | your real key |
+| `EMAIL_FROM` | a verified sender on your Resend domain |
+| `APP_URL` | your real `https://...onrender.com` URL (or custom domain) — email image links are built from this, so it must be the real public URL, not `localhost` |
+| `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | your real admin login — **set these before seeding**, don't ship with the `admin@example.com` / `changeme123` default |
+| `UPLOADS_DIR` | the disk mount path from step 3 |
+
+### 5. First deploy: push schema + seed
+
+After the first successful deploy, run once via Render's Shell (Web Service
+→ Shell tab):
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+`db:seed` is safe to re-run later (it upserts the price book by name instead
+of duplicating it) — but `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` must
+already be set to their real values the first time it runs, since that's
+when the admin login gets created.
+
+### 6. Verify
+
+Visit the real URL, log in with the real admin credentials, create a test
+quote, generate an after photo, and send a test email to yourself — confirm
+the embedded photo actually loads in Gmail (this is what `APP_URL` being
+correct fixes).
 
 ## Auth
 

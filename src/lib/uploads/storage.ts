@@ -2,8 +2,9 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { resolveUploadsRoot } from "./root";
 
-const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
+const UPLOADS_ROOT = resolveUploadsRoot();
 
 const ALLOWED_MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -17,14 +18,17 @@ export class UploadValidationError extends Error {}
 
 /**
  * Saves an uploaded photo (from a <form action> File field) under
- * public/uploads/<subdir>/, with a random filename — never trusting the
+ * <uploads root>/<subdir>/, with a random filename — never trusting the
  * original filename beyond its validated content type. Returns the public
- * URL path to store on the Photo record.
+ * URL path to store on the Photo record (always `/uploads/...` — see the
+ * route handler at src/app/uploads/[...path]/route.ts for how that URL maps
+ * back to wherever UPLOADS_DIR actually points).
  *
- * Note: this writes to local disk, which only works for a single
- * long-running server process (not serverless/edge deployments with an
- * ephemeral filesystem). See README for swapping in object storage (S3/R2)
- * for a multi-instance or serverless deployment.
+ * Note: this writes to local/mounted disk, which only works for a single
+ * long-running server process with a persistent filesystem (a plain VM or a
+ * host like Render with an attached disk) — not a serverless/edge
+ * deployment with an ephemeral filesystem. See README for swapping in
+ * object storage (S3/R2) if you ever move to one of those instead.
  */
 export async function saveUploadedPhoto(file: File, subdir: string): Promise<{ url: string; mimeType: string; buffer: Buffer }> {
   if (file.size === 0) {

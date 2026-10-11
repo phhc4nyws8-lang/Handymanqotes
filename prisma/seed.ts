@@ -429,7 +429,11 @@ async function main() {
   console.log("Seeding NorCal price book...");
 
   for (const m of materialPrices) {
-    await prisma.materialPrice.create({ data: m });
+    await prisma.materialPrice.upsert({
+      where: { name: m.name },
+      update: m,
+      create: m,
+    });
   }
 
   for (const l of laborRates) {

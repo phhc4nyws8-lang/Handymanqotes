@@ -1,15 +1,16 @@
 // Handyman Quotes — data model
 //
-// Dev/demo database is SQLite (zero setup). For production, swap the
-// datasource provider to "postgresql" and point DATABASE_URL at a real
-// Postgres instance (Neon/Supabase/RDS all work) — see README.md.
+// Postgres (e.g. Render's managed Postgres) — see README.md for local setup
+// and deployment. The app previously ran on SQLite for zero-setup local dev;
+// now that it's deploying to a real persistent host, Postgres is used
+// everywhere (local dev included) so there's only one code path to test.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -172,7 +173,10 @@ model MaterialPrice {
   id                String           @id @default(cuid())
   region            String           @default("Northern California")
   category          MaterialCategory
-  name              String
+  /// Unique so the seed script can upsert by name instead of blindly
+  /// inserting — re-running the seed (e.g. by accident in production)
+  /// updates existing rows instead of duplicating the whole price book.
+  name              String           @unique
   description       String
   unit              PriceUnit
   unitCost          Float
