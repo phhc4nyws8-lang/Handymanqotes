@@ -8,12 +8,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [],
   },
   experimental: {
-    // Server Actions default to a 1MB body limit, well under the 10MB photo
-    // cap enforced in src/lib/uploads/storage.ts — phone camera photos
-    // routinely exceed 1MB, so without this they get truncated mid-upload
-    // ("Unexpected end of form") before that check ever runs.
+    // Server Actions default to a 1MB body limit, well under the 30MB photo
+    // cap enforced in src/lib/uploads/storage.ts — full-resolution phone
+    // camera photos can run 15-25MB+, so without this they get truncated
+    // mid-upload ("Unexpected end of form") before that check ever runs.
     serverActions: {
-      bodySizeLimit: "12mb",
+      bodySizeLimit: "32mb",
     },
   },
 };

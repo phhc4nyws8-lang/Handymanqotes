@@ -12,7 +12,7 @@ const ALLOWED_MIME_TO_EXT: Record<string, string> = {
   "image/webp": "webp",
 };
 
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_UPLOAD_BYTES = 30 * 1024 * 1024; // 30MB — covers full-resolution phone camera photos
 
 export class UploadValidationError extends Error {}
 
@@ -35,7 +35,7 @@ export async function saveUploadedPhoto(file: File, subdir: string): Promise<{ u
     throw new UploadValidationError("No file was uploaded.");
   }
   if (file.size > MAX_UPLOAD_BYTES) {
-    throw new UploadValidationError("Photo is too large (max 10MB).");
+    throw new UploadValidationError("Photo is too large (max 30MB).");
   }
   const ext = ALLOWED_MIME_TO_EXT[file.type];
   if (!ext) {
