@@ -18,5 +18,12 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  // GET-only: iOS Safari has a known bug where re-issuing a POST with a
+  // large/multipart body through event.respondWith(fetch(event.request))
+  // fails ("FetchEvent.respondWith received an error: TypeError: Load
+  // failed") — broke photo uploads. Not responding at all for non-GET lets
+  // the browser handle the request natively, which is equivalent anyway
+  // since this worker does no caching.
+  if (event.request.method !== "GET") return;
   event.respondWith(fetch(event.request));
 });
